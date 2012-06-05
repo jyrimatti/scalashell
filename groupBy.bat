@@ -26,7 +26,7 @@ Examples:
 
 import scala.io._
 
-val lines = Source.stdin.getLines.toStream
+val lines = Source.stdin.getLines.toSeq
 
 val GroupByPattern = args(0).r
 val method = if (args.length == 1) None else Some(args(1))
