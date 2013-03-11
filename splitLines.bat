@@ -1,29 +1,36 @@
-::#!
+::#! 2>/dev/null || echo "
 @echo off
-for /f "tokens=*" %%a in ('where %0') do @set loc=%%a 
-call scala -savecompiled %loc% %*
+call scala -savecompiled %~f0 %*
 goto :eof
+" >//null 
+#!/bin/sh
+exec scala -savecompiled "$0" "$@"
 ::!#
-"""
 
-Splits lines around matches of the given regex
+args match {
+  case Array(regex) => // OK
+  case _ => {
+    println("""
+		| Splits lines around matches of the given regex
 
-Usage:
-  splitLines "<regex>"
+		| Usage:
+		|   splitLines "<regex>"
 
-Examples:
-  echo abcdef | splitLines "[bce]"
-    a
-    
-    d
-    f
+		| Examples:
+		|   echo abcdef | splitLines "[bce]"
+		|     a
+		    
+		|     d
+		|     f
 
-  echo abcdef | splitLines "[bce]+"
-    a
-    d
-    f
-
-"""
+		|   echo abcdef | splitLines "[bce]+"
+		|     a
+		|     d
+		|     f
+    """.stripMargin)
+    exit
+  }
+}
 
 import scala.io._
 

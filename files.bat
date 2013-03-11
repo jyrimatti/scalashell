@@ -1,29 +1,41 @@
-::#!
+::#! 2>/dev/null || echo "
 @echo off
-for /f "tokens=*" %%a in ('where %0') do @set loc=%%a 
-call scala -savecompiled %loc% %*
+call scala -savecompiled %~f0 %*
 goto :eof
+" >//null 
+#!/bin/sh
+exec scala -savecompiled "$0" "$@"
 ::!#
-"""
 
-List files of a given or current directory
+val params = args map { new java.io.File(_) }
 
-Usage:
-  files
-  files "<path>"
+val dirs = params match {
+	case Array()          => Array(new java.io.File("."))
+	case a if a.forall{_.isDirectory} => a
+	case a => {
+		a filter {!_.isDirectory} foreach {f => println(f + " is not a directory!")}
+		println("""
+			| List files of the current directory or all the given directories, non-recursively
 
-Examples:
-  files
-    .\bar.txt
+			| Usage:
+			|   files
+			|   files "<path>" ...
 
-  files "c:\foo"
-    c:\foo\bar.txt
+			| Examples:
+			|   files
+			|     .\bar.txt
 
-"""
+			|   files "c:\foo" "c:\bar"
+			|     c:\foo\bar.txt
+			|     c:\bar\baz.txt
+		""".stripMargin)
+		exit
+	}
+}
 
 import scala.io._
 
 for {
-	dir <- (if (args.isEmpty) Array(".") else args)
-	file <- new java.io.File(dir).listFiles if file.isFile
+	dir <- dirs
+	file <- dir.listFiles
 } println(file.getPath)

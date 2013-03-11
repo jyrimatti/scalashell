@@ -1,22 +1,29 @@
-::#!
+::#! 2>/dev/null || echo "
 @echo off
-for /f "tokens=*" %%a in ('where %0') do @set loc=%%a 
-call scala -savecompiled %loc% %*
+call scala -savecompiled %~f0 %*
 goto :eof
+" >//null 
+#!/bin/sh
+exec scala -savecompiled "$0" "$@"
 ::!#
-"""
 
-Drop lines as long as they match a given regex
+args match {
+	case Array(lineRegex) => // OK
+	case _ => {
+		println("""
+			| Drop lines as long as they match a given regex
 
-Usage:
-  dropWhile "<regex>"
+			| Usage:
+			|   dropWhile "<regex>"
 
-Examples:
-  (echo a && echo b && echo a) | dropWhile "a.*"
-    b
-    a
-
-"""
+			| Examples:
+			|   (echo a && echo b && echo a) | dropWhile "a.*"
+			|    b
+			|    a
+		""".stripMargin)
+		exit
+	}
+}
 
 import scala.io._
 

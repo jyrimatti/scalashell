@@ -1,26 +1,33 @@
-::#!
+::#! 2>/dev/null || echo "
 @echo off
-for /f "tokens=*" %%a in ('where %0') do @set loc=%%a 
-call scala -savecompiled %loc% %*
+call scala -savecompiled %~f0 %*
 goto :eof
+" >//null 
+#!/bin/sh
+exec scala -savecompiled "$0" "$@"
 ::!#
-"""
 
-Reverse the collection of lines
+args match {
+	case Array() => // OK
+	case _ => {
+		println("""
+			| Reverse the collection of lines
 
-Usage:
-  reverse
+			| Usage:
+			|   reverse
 
-Examples:
-  (echo a && echo b && echo c) | reverse
-    c
-    b
-    a
-
-"""
+			| Examples:
+			|   (echo a && echo b && echo c) | reverse
+			|     c
+			|     b
+			|     a
+		""".stripMargin)
+		exit
+	}
+}
 
 import scala.io._
 
 val lines = Source.stdin.getLines
 
-lines.toStream.reverse.foreach(println)
+lines.toSeq.reverse.foreach(println)

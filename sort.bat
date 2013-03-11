@@ -1,26 +1,33 @@
-::#!
+::#! 2>/dev/null || echo "
 @echo off
-for /f "tokens=*" %%a in ('where %0') do @set loc=%%a 
-call scala -savecompiled %loc% %*
+call scala -savecompiled %~f0 %*
 goto :eof
+" >//null 
+#!/bin/sh
+exec scala -savecompiled "$0" "$@"
 ::!#
-"""
 
-Sort lines to natural order of strings
+args match {
+	case Array() => // OK
+	case _ => {
+		println("""
+			| Sort lines to natural order of strings
 
-Usage:
-  sort
+			| Usage:
+			|   sort
 
-Examples:
-  (echo a && echo b && echo a) | sort
-    a
-    a
-    b
-
-"""
+			| Examples:
+			|   (echo a && echo b && echo a) | sort
+			|     a
+			|     a
+			|     b
+		""".stripMargin)
+		exit
+	}
+}
 
 import scala.io._
 
 val lines = Source.stdin.getLines
 
-lines.sorted.foreach(println)
+lines.toSeq.sorted.foreach(println)

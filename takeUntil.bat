@@ -1,21 +1,28 @@
-::#!
+::#! 2>/dev/null || echo "
 @echo off
-for /f "tokens=*" %%a in ('where %0') do @set loc=%%a 
-call scala -savecompiled %loc% %*
+call scala -savecompiled %~f0 %*
 goto :eof
+" >//null 
+#!/bin/sh
+exec scala -savecompiled "$0" "$@"
 ::!#
-"""
 
-Takes lines as long as they don't match a given regex
+args match {
+  case Array(regex) => // OK
+  case _ => {
+    println("""
+		| Takes lines as long as they don't match a given regex
 
-Usage:
-  takeUntil "<regex>"
+		| Usage:
+		|   takeUntil "<regex>"
 
-Examples:
-  (echo a && echo b && echo a) | takeUntil "b.*"
-    a
-
-"""
+		| Examples:
+		|   (echo a && echo b && echo a) | takeUntil "b.*"
+		|     a
+    """.stripMargin)
+    exit
+  }
+}
 
 import scala.io._
 

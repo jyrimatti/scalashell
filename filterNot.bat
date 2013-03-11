@@ -1,22 +1,29 @@
-::#!
+::#! 2>/dev/null || echo "
 @echo off
-for /f "tokens=*" %%a in ('where %0') do @set loc=%%a 
-call scala -savecompiled %loc% %*
+call scala -savecompiled %~f0 %*
 goto :eof
+" >//null 
+#!/bin/sh
+exec scala -savecompiled "$0" "$@"
 ::!#
-"""
 
-Keep only lines that don't match a given regex
+args match {
+	case Array(lineRegex) => // OK
+	case _ => {
+		println("""
+			| Keep only lines that don't match the given regex
 
-Usage:
-  filterNot "<regex>"
+			| Usage:
+			|   filterNot "<regex>"
 
-Examples:
-  (echo a && echo b && echo a) | filterNot "b.*"
-    a
-    a
-
-"""
+			| Examples:
+			|   (echo a && echo b && echo a) | filterNot "b.*"
+			|     a
+			|     a
+		""".stripMargin)
+		exit
+	}
+}
 
 import scala.io._
 

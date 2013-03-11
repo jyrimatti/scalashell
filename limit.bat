@@ -1,22 +1,29 @@
-::#!
+::#! 2>/dev/null || echo "
 @echo off
-for /f "tokens=*" %%a in ('where %0') do @set loc=%%a 
-call scala -savecompiled %loc% %*
+call scala -savecompiled %~f0 %*
 goto :eof
+" >//null 
+#!/bin/sh
+exec scala -savecompiled "$0" "$@"
 ::!#
-"""
 
-Limit the amount of rows
+args match {
+	case Array(maxRows) if maxRows matches "\\d+" => // OK
+	case _ => {
+		println("""
+			| Limit the amount of rows
 
-Usage:
-  limit <integer>
+			| Usage:
+			|   limit <positive_integer>
 
-Examples:
-  (echo a && echo b && echo a) | limit 2
-    a
-    b
-
-"""
+			| Examples:
+			|   (echo a && echo b && echo a) | limit 2
+			|     a
+			|     b
+		""".stripMargin)
+		exit
+	}
+}
 
 import scala.io._
 
