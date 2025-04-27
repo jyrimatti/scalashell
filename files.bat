@@ -6,7 +6,7 @@ goto :eof
 #!/bin/sh
 exec scala -savecompiled "$0" "$@"
 ::!#
-
+// Petes sörkkii
 val params = args map { new java.io.File(_) }
 
 val dirs = params match {
